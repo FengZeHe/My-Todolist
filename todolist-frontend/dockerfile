@@ -1,0 +1,21 @@
+# build 以node作为基础镜像
+FROM node:lts-alpine as build
+WORKDIR /app 
+COPY package*.json ./
+RUN npm config set registry https://registry.npm.taobao.org && npm install
+COPY . .
+RUN npm run build
+
+# production
+FROM nginx:stable-alpine as production 
+#COPY ./key/cert.pem /etc/nginx/ssl/cert.pem
+#COPY ./key/key.pem /etc/nginx/ssl/key.pem
+#COPY nginx.conf /etc/nginx/nginx.conf
+
+COPY --from=build /app/dist /usr/share/nginx/html
+# 使用COPY指令将本地已经构建好的静态网站文件dist目录复制到镜像内的默认web服务器目录
+EXPOSE 80
+# 暴露端口
+CMD [ "nginx","-g","daemon off;"]
+# 启动命令
+# CMD ["nginx", "-g", "daemon off;","-c","/etc/nginx/nginx.conf"]

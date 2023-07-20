@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  frontend:
+    image: todolist:v1
+    ports:
+      - "8080:80"
+  backend:
+    image: todolist-backend:v1
+    ports:
+      - "9002:9002"
